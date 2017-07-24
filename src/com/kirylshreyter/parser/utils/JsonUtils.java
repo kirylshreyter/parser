@@ -48,6 +48,7 @@ public class JsonUtils {
 	}
 
 	public Object clear(String string) {
+		string = string.trim();
 		string = string.replaceAll("\"", "");
 		if (string.contentEquals("true")) {
 			return true;

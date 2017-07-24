@@ -4,6 +4,4 @@ public interface JsonValueField {
 
 	Object getValue();
 
-	void setValue(Object object);
-
 }

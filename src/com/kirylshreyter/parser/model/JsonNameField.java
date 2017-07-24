@@ -1,9 +1,9 @@
 package com.kirylshreyter.parser.model;
 
 public class JsonNameField {
-	
+
 	private String name;
-	
+
 	public JsonNameField(String name) {
 		this.name = name;
 	}
@@ -16,4 +16,8 @@ public class JsonNameField {
 		this.name = name;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }

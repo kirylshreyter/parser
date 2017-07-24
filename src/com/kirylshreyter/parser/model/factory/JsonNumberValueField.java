@@ -15,9 +15,4 @@ class JsonNumberValueField implements JsonValueField {
 		return this.value;
 	}
 
-	@Override
-	public void setValue(Object object) {
-		this.value = (Number) object;
-	}
-
 }

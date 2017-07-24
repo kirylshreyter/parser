@@ -19,10 +19,4 @@ class JsonArrayValueField implements JsonValueField {
 		return this.content;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void setValue(Object object) {
-		this.content = (HashMap<JsonNameField, JsonValueField>) object;
-	}
-
 }

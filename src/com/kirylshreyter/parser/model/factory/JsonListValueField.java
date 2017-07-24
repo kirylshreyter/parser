@@ -19,10 +19,4 @@ class JsonListValueField implements JsonValueField {
 		return this.value;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void setValue(Object object) {
-		this.value = (List<JsonObject>) object;
-	}
-
 }

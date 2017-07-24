@@ -1,22 +1,16 @@
 package com.kirylshreyter.parser.model;
 
-import java.util.HashMap;
-
 public class JsonObject {
 
-	private HashMap<JsonNameField, JsonValueField> content;
+	public CustomHashMap<JsonNameField, JsonValueField> content;
+
+	public JsonObject() {
+		this.content = new CustomHashMap<>();
+	}
 
 	public JsonObject(JsonNameField nameField, JsonValueField valueField) {
-		content = new HashMap<>();
-		content.put(nameField, valueField);
-	}
-
-	public HashMap<JsonNameField, JsonValueField> getContent() {
-		return content;
-	}
-
-	public void setContent(HashMap<JsonNameField, JsonValueField> content) {
-		this.content = content;
+		this.content = new CustomHashMap<>();
+		this.content.put(nameField, valueField);
 	}
 
 }

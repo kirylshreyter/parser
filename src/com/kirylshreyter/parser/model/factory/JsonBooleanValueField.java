@@ -15,9 +15,4 @@ class JsonBooleanValueField implements JsonValueField {
 		return this.value;
 	}
 
-	@Override
-	public void setValue(Object object) {
-		this.value = (Boolean) object;
-	}
-
 }

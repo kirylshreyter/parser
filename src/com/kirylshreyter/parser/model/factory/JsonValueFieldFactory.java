@@ -15,8 +15,10 @@ public class JsonValueFieldFactory {
 			return new JsonStringValueField(object);
 		} else if (object.getClass() == Boolean.class) {
 			return new JsonBooleanValueField(object);
-		}else if (object instanceof java.util.Map<?,?>) {
+		} else if (object instanceof java.util.Map<?, ?>) {
 			return new JsonArrayValueField(object);
+		} else if (object instanceof com.kirylshreyter.parser.model.JsonObject) {
+			return new JsonObjectValueField(object);
 		}
 		return null;
 	}

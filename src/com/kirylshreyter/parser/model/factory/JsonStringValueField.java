@@ -15,9 +15,4 @@ class JsonStringValueField implements JsonValueField {
 		return this.value;
 	}
 
-	@Override
-	public void setValue(Object object) {
-		this.value = object.toString();
-	}
-
 }
