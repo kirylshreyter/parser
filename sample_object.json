@@ -8,5 +8,15 @@
 		"price": 12.50,
 		"tags": "home"
 	},
-	"tagsa": "home"
+	"tagsa": "home",
+	"list": [
+		1,
+		2
+	],
+	"tags1": {
+		"id": "1",
+		"name": "A green door",
+		"price": 12.50,
+		"tags": "home"
+	}
 }

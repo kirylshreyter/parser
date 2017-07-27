@@ -1,28 +1,27 @@
 package com.kirylshreyter.parser.impl;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import com.kirylshreyter.parser.Parser;
 import com.kirylshreyter.parser.helpers.JsonHelpers;
-import com.kirylshreyter.parser.model.CustomHashMap;
-import com.kirylshreyter.parser.model.JsonNameField;
 import com.kirylshreyter.parser.model.JsonObject;
-import com.kirylshreyter.parser.model.JsonValueField;
-import com.kirylshreyter.parser.utils.JsonUtils;
+import com.kirylshreyter.parser.utils.JsonUtil;
+import com.kirylshreyter.parser.validation.JsonValidation;
 
-public class ObjectParser implements Parser {
+public class ObjectParser implements Parser<JsonObject> {
 
-	private JsonUtils utils = JsonUtils.getInstance();
+	private JsonUtil jsonUtil = new JsonUtil();
 	private JsonHelpers helpers = new JsonHelpers();
 
-	@SuppressWarnings("unchecked")
 	public JsonObject parse(String inputFile) {
-		String fullJsonString = utils.getJsonStringFromFile(inputFile);
-		String preparedJsonString = utils.removeLiteralsFromJsonString(fullJsonString);
+		String fullJsonString = jsonUtil.getJsonStringFromFile(inputFile, "");
+		JsonValidation.getInstance().checkIfJsonStringIsValid(fullJsonString);
+		String preparedJsonString = jsonUtil.removeLiteralsFromJsonString(fullJsonString);
 		LinkedList<String> strings = new LinkedList<>();
 		strings = helpers.getMainJsonObject(preparedJsonString, strings);
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.content = new CustomHashMap<JsonNameField, JsonValueField>();
+		jsonObject.content = new HashMap<>();
 		for (String string : strings) {
 			helpers.getJsonObjectFirstLevel(string, jsonObject);
 		}

@@ -1,7 +1,7 @@
 package com.kirylshreyter.parser;
 
-public interface Parser {
+public interface Parser<T> {
 
-	<Type> Type parse(String inputFile);
+	T parse(String filePath);
 
 }

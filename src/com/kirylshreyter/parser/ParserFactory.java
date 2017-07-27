@@ -2,21 +2,17 @@ package com.kirylshreyter.parser;
 
 import com.kirylshreyter.parser.impl.ListParser;
 import com.kirylshreyter.parser.impl.ObjectParser;
-import com.kirylshreyter.parser.utils.JsonUtils;
-import com.kirylshreyter.parser.validation.JsonValidation;
+import com.kirylshreyter.parser.utils.JsonUtil;
 
 public class ParserFactory {
 
-	@SuppressWarnings("unchecked")
-	public static <Type> Type getParser(String inputFile) {
-		String fullJsonString = JsonUtils.getInstance().getJsonStringFromFile(inputFile);
-		JsonValidation.getInstance().checkIfJsonStringIsValid(fullJsonString);
-		if (fullJsonString.indexOf("[") < fullJsonString.indexOf("{")
-				&& fullJsonString.lastIndexOf("]") > fullJsonString.lastIndexOf("}")) {
-			return (Type) new ListParser();
-		} else {
-			return (Type) new ObjectParser();
+	public static Parser<?> getParser(String inputFile) {
+		JsonUtil util = new JsonUtil();
+		String fullJsonString = util.getJsonStringFromFile(inputFile, "{");
+		if ((fullJsonString.indexOf("[") < fullJsonString.indexOf("{")) && fullJsonString.indexOf("[") != -1) {
+			return new ListParser();
 		}
+		return new ObjectParser();
 	}
 
 }

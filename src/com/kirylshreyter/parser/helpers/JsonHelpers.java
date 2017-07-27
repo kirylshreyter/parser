@@ -1,16 +1,17 @@
 package com.kirylshreyter.parser.helpers;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
-import com.kirylshreyter.parser.model.JsonNameField;
 import com.kirylshreyter.parser.model.JsonObject;
-import com.kirylshreyter.parser.model.JsonValueField;
-import com.kirylshreyter.parser.model.factory.JsonValueFieldFactory;
-import com.kirylshreyter.parser.utils.JsonUtils;
+import com.kirylshreyter.parser.model.JsonValue;
+import com.kirylshreyter.parser.model.factory.JsonValueFactory;
+import com.kirylshreyter.parser.utils.JsonUtil;
 
 public class JsonHelpers {
 
-	JsonUtils utils = JsonUtils.getInstance();
+	JsonUtil utils = new JsonUtil();
 
 	public LinkedList<String> getMainJsonObject(String editedJsonString, LinkedList<String> objectsList) {
 		int start_index = editedJsonString.indexOf('{');
@@ -37,20 +38,37 @@ public class JsonHelpers {
 	public JsonObject getJsonObjectFirstLevel(String mainJsonObject, JsonObject jsonObject) {
 		int cutIndex = getEndNameFieldIndex(mainJsonObject);
 		String nameField = mainJsonObject.substring(getStartNameFieldIndex(), getEndNameFieldIndex(mainJsonObject) - 1);
+		System.out.println(nameField);
 		mainJsonObject = mainJsonObject.substring(cutIndex + 1);
 		nameField = utils.clear(nameField).toString();
-		JsonNameField jsonNameField = new JsonNameField(nameField);
+		String jsonNameField = nameField;
 		cutIndex = getEndValueFieldIndex(mainJsonObject);
+		System.out.println(">>>>" + mainJsonObject);
 		String valueField = mainJsonObject.substring(getStartValueFieldIndex(mainJsonObject),
 				getEndValueFieldIndex(mainJsonObject));
-		JsonValueField jsonValueField;
+		JsonValue<?> jsonValueField;
+		System.out.println(valueField);
 		if (valueField.contains("{") && valueField.contains("}")) {
-			valueField = valueField.replaceAll("\\{", "").replaceAll("\\}", "");
+			valueField = removeFirstAndLastCharOfPresented(valueField, "{", "}");
 			JsonObject jsonObject2 = new JsonObject();
-			jsonValueField = JsonValueFieldFactory.getJsonValueField(getJsonObjectSecondLevel(valueField, jsonObject2));
+			jsonValueField = JsonValueFactory.getJsonValue(getJsonObjectFirstLevel(valueField, jsonObject2));
+		} else if (valueField.contains("[") && valueField.contains("]")) {
+			if (valueField.contains("{") && valueField.contains("}")) {
+				valueField = removeFirstAndLastCharOfPresented(valueField, "[", "]");
+				jsonValueField = JsonValueFactory.getJsonValue(getJsonObjectList(valueField));
+			}
+			int opBrakPos = valueField.indexOf("[");
+			int clBrakPos = valueField.lastIndexOf("]");
+			StringBuilder builder = new StringBuilder(valueField);
+			builder.deleteCharAt(opBrakPos).deleteCharAt(clBrakPos);
+			valueField = builder.toString();
+
+			List<JsonValue<?>> list = new LinkedList<>();
+			splitJsonArray(valueField, list);
+			jsonValueField = JsonValueFactory.getJsonValue(list);
 		} else {
 			Object valueFieldObject = utils.clear(valueField);
-			jsonValueField = JsonValueFieldFactory.getJsonValueField(valueFieldObject);
+			jsonValueField = JsonValueFactory.getJsonValue(valueFieldObject);
 		}
 		mainJsonObject = mainJsonObject.substring(cutIndex);
 		jsonObject.content.put(jsonNameField, jsonValueField);
@@ -58,6 +76,30 @@ public class JsonHelpers {
 			getJsonObjectFirstLevel(mainJsonObject, jsonObject);
 		}
 		return jsonObject;
+	}
+
+	private String removeFirstAndLastCharOfPresented(String valueField, String firstChar, String lastChar) {
+		StringBuilder builder = new StringBuilder(valueField);
+		int opBracePos = builder.indexOf(firstChar);
+		builder.deleteCharAt(opBracePos);
+		int clBracePos = builder.lastIndexOf(lastChar);
+		builder.deleteCharAt(clBracePos);
+		valueField = builder.toString();
+		return valueField;
+	}
+
+	private void splitJsonArray(String valueField, List<JsonValue<?>> list) {
+		if (valueField.indexOf(",") != -1) {
+			String val = valueField.substring(0, valueField.indexOf(","));
+			valueField = valueField.substring(valueField.indexOf(",") + 1);
+			JsonValue<?> jsonValue = JsonValueFactory.getJsonValue(utils.clear(val));
+			list.add(jsonValue);
+			splitJsonArray(valueField, list);
+		} else {
+			String val = valueField.substring(0, valueField.length());
+			JsonValue<?> jsonValue = JsonValueFactory.getJsonValue(utils.clear(val));
+			list.add(jsonValue);
+		}
 	}
 
 	private int getStartNameFieldIndex() {
@@ -74,6 +116,10 @@ public class JsonHelpers {
 			return string.indexOf("\"");
 		} else if (string.indexOf("{") < string.indexOf("\"") && string.indexOf("{") != -1) {
 			return string.indexOf("{");
+		} else if ((string.indexOf("[") < string.indexOf("\"")) && string.indexOf("[") != -1
+				&& (string.indexOf("[") < string.indexOf("{")) && (string.indexOf("[") < string.indexOf(","))) {
+			return string.indexOf("[");
+
 		}
 		return 0;
 	}
@@ -90,24 +136,18 @@ public class JsonHelpers {
 		}
 	}
 
-	public JsonObject getJsonObjectSecondLevel(String mainJsonObject, JsonObject jsonObject) {
-		int cutIndex = getEndNameFieldIndex(mainJsonObject);
-		String nameField = mainJsonObject.substring(getStartNameFieldIndex(), getEndNameFieldIndex(mainJsonObject) - 1);
-		mainJsonObject = mainJsonObject.substring(cutIndex + 1);
-		nameField = utils.clear(nameField).toString();
-		JsonNameField jsonNameField = new JsonNameField(nameField);
-		cutIndex = getEndValueFieldIndex(mainJsonObject);
-		String valueField = mainJsonObject.substring(getStartValueFieldIndex(mainJsonObject),
-				getEndValueFieldIndex(mainJsonObject));
-		JsonValueField jsonValueField;
-		mainJsonObject = mainJsonObject.substring(cutIndex);
-		Object valueFieldObject = utils.clear(valueField);
-		jsonValueField = JsonValueFieldFactory.getJsonValueField(valueFieldObject);
-		jsonObject.content.put(jsonNameField, jsonValueField);
-		if (mainJsonObject.indexOf(",") != -1) {
-			getJsonObjectFirstLevel(mainJsonObject, jsonObject);
+	public List<JsonObject> getJsonObjectList(String fullJsonString) {
+		String preparedJsonString = utils.removeLiteralsFromJsonString(fullJsonString);
+		LinkedList<String> strings = new LinkedList<>();
+		strings = getMainJsonObject(preparedJsonString, strings);
+		List<JsonObject> result = new LinkedList<>();
+		for (String string : strings) {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.content = new HashMap<>();
+			getJsonObjectFirstLevel(string, jsonObject);
+			result.add(jsonObject);
 		}
-		return jsonObject;
+		return result;
 	}
 
 }
