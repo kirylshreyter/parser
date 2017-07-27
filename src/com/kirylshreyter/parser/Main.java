@@ -11,23 +11,27 @@ import com.kirylshreyter.parser.model.JsonValue;
 public class Main {
 
 	public static void main(String[] args) {
-		Parser<?> objectParser = ParserFactory.getParser("e:/java/workspaces/Parser/sample_object.json");
+		Parser<?> objectParser = ParserFactory.getParser("D:/biglion/java/workspace/parser/sample_object.json");
 		System.out.println("-------------------------");
-		JsonObject jsonObject = (JsonObject) objectParser.parse("e:/java/workspaces/parser/sample_object.json");
-		JsonValue<?> valueField = jsonObject.content.get("price");
-
+		JsonObject jsonObject = (JsonObject) objectParser.parse("D:/biglion/java/workspace/parser/sample_object.json");
+		JsonValue<?> valueField = jsonObject.content.get("list");
+		Iterator<?> itr1 = valueField.iterator();
+		while(itr1.hasNext()){
+			JsonValue<?> newR = (JsonValue<?>) itr1.next();
+			System.out.println(newR.getValue());
+		}
 		System.out.println(">>>>>>>" + valueField.getValue());
 		Iterator<Entry<String, JsonValue<?>>> itr = jsonObject.content.entrySet().iterator();
 		while (itr.hasNext()) {
 			Map.Entry<String, JsonValue<?>> entry = itr.next();
-			System.out.println(entry.getKey() + ":" + entry.getValue().getValue());
+			System.out.println(entry.getKey() + ":" + entry.getValue());
 		}
 		System.out.println("-------------------------");
 
-		Parser<?> listParser = ParserFactory.getParser("e:/java/workspaces/Parser/sample_list.json");
+		Parser<?> listParser = ParserFactory.getParser("D:/biglion/java/workspace/parser/sample_list.json");
 		@SuppressWarnings("unchecked")
 		List<JsonObject> listJsonObject = (List<JsonObject>) listParser
-				.parse("e:/java/workspaces/parser/sample_list.json");
+				.parse("D:/biglion/java/workspace/parser/sample_list.json");
 		Iterator<JsonObject> listItr = listJsonObject.iterator();
 		System.out.println("-------------------------");
 		while (listItr.hasNext()) {

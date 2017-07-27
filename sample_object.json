@@ -1,5 +1,5 @@
 {
-	"id": "1",
+	"id": 1,
 	"name": "A green door",
 	"price": 12.50,
 	"tags": {
@@ -10,13 +10,20 @@
 	},
 	"tagsa": "home",
 	"list": [
-		1,
-		2
+		"1",
+		"2"
 	],
 	"tags1": {
 		"id": "1",
 		"name": "A green door",
 		"price": 12.50,
 		"tags": "home"
+	},
+	"tags2": {
+		"id": "1",
+		"name": "A green door",
+		"price": 12.50,
+		"tags": "home"
 	}
+	
 }

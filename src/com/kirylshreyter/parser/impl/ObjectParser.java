@@ -23,7 +23,7 @@ public class ObjectParser implements Parser<JsonObject> {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.content = new HashMap<>();
 		for (String string : strings) {
-			helpers.getJsonObjectFirstLevel(string, jsonObject);
+			helpers.getJsonObject(string, jsonObject);
 		}
 		System.out.println("Object was successfully parsed from file.");
 		return jsonObject;

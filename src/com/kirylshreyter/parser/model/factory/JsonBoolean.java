@@ -1,5 +1,7 @@
 package com.kirylshreyter.parser.model.factory;
 
+import java.util.Iterator;
+
 import com.kirylshreyter.parser.model.JsonValue;
 
 class JsonBoolean implements JsonValue<Boolean> {
@@ -13,5 +15,11 @@ class JsonBoolean implements JsonValue<Boolean> {
 	@Override
 	public Boolean getValue() {
 		return this.value;
+	}
+
+	@Override
+	public Iterator<Boolean> iterator() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

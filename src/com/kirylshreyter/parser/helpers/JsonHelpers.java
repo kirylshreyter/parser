@@ -1,5 +1,6 @@
 package com.kirylshreyter.parser.helpers;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,34 +36,26 @@ public class JsonHelpers {
 		return objectsList;
 	}
 
-	public JsonObject getJsonObjectFirstLevel(String mainJsonObject, JsonObject jsonObject) {
+	public JsonObject getJsonObject(String mainJsonObject, JsonObject jsonObject) {
 		int cutIndex = getEndNameFieldIndex(mainJsonObject);
 		String nameField = mainJsonObject.substring(getStartNameFieldIndex(), getEndNameFieldIndex(mainJsonObject) - 1);
-		System.out.println(nameField);
 		mainJsonObject = mainJsonObject.substring(cutIndex + 1);
 		nameField = utils.clear(nameField).toString();
 		String jsonNameField = nameField;
 		cutIndex = getEndValueFieldIndex(mainJsonObject);
-		System.out.println(">>>>" + mainJsonObject);
 		String valueField = mainJsonObject.substring(getStartValueFieldIndex(mainJsonObject),
 				getEndValueFieldIndex(mainJsonObject));
 		JsonValue<?> jsonValueField;
-		System.out.println(valueField);
 		if (valueField.contains("{") && valueField.contains("}")) {
 			valueField = removeFirstAndLastCharOfPresented(valueField, "{", "}");
 			JsonObject jsonObject2 = new JsonObject();
-			jsonValueField = JsonValueFactory.getJsonValue(getJsonObjectFirstLevel(valueField, jsonObject2));
+			jsonValueField = JsonValueFactory.getJsonValue(getJsonObject(valueField, jsonObject2));
 		} else if (valueField.contains("[") && valueField.contains("]")) {
 			if (valueField.contains("{") && valueField.contains("}")) {
 				valueField = removeFirstAndLastCharOfPresented(valueField, "[", "]");
 				jsonValueField = JsonValueFactory.getJsonValue(getJsonObjectList(valueField));
 			}
-			int opBrakPos = valueField.indexOf("[");
-			int clBrakPos = valueField.lastIndexOf("]");
-			StringBuilder builder = new StringBuilder(valueField);
-			builder.deleteCharAt(opBrakPos).deleteCharAt(clBrakPos);
-			valueField = builder.toString();
-
+			valueField = removeFirstAndLastCharOfPresented(valueField, "[", "]");
 			List<JsonValue<?>> list = new LinkedList<>();
 			splitJsonArray(valueField, list);
 			jsonValueField = JsonValueFactory.getJsonValue(list);
@@ -73,7 +66,7 @@ public class JsonHelpers {
 		mainJsonObject = mainJsonObject.substring(cutIndex);
 		jsonObject.content.put(jsonNameField, jsonValueField);
 		if (mainJsonObject.indexOf(",") != -1) {
-			getJsonObjectFirstLevel(mainJsonObject, jsonObject);
+			getJsonObject(mainJsonObject, jsonObject);
 		}
 		return jsonObject;
 	}
@@ -110,24 +103,49 @@ public class JsonHelpers {
 		return string.indexOf(":");
 	}
 
-	private int getStartValueFieldIndex(String string) {
-		if (string.indexOf("\"") < string.indexOf(",")
-				&& (string.indexOf("{") == -1 || string.indexOf("{") > string.indexOf("\""))) {
-			return string.indexOf("\"");
-		} else if (string.indexOf("{") < string.indexOf("\"") && string.indexOf("{") != -1) {
-			return string.indexOf("{");
-		} else if ((string.indexOf("[") < string.indexOf("\"")) && string.indexOf("[") != -1
-				&& (string.indexOf("[") < string.indexOf("{")) && (string.indexOf("[") < string.indexOf(","))) {
-			return string.indexOf("[");
+	private boolean isAbsent(int index) {
+		if (index == -1)
+			return true;
+		return false;
+	}
 
+	private int getStartValueFieldIndex(String string) {
+		int comma_index = string.indexOf(",");
+		int doublequote_index = string.indexOf("\"");
+		int bracket_index = string.indexOf("[");
+		int bracer_index = string.indexOf("{");
+		if (!isAbsent(comma_index)) {
+			String temp = string.substring(0, comma_index);
+			if (temp.indexOf("\"") == -1 && temp.indexOf("{") == -1 && temp.indexOf("[") == -1) {
+				return 0;
+			}
 		}
+		List<Integer> indexes = new LinkedList<>();
+		if (!isAbsent(doublequote_index)) {
+			indexes.add(doublequote_index);
+		}
+		if (!isAbsent(bracket_index)) {
+			indexes.add(bracket_index);
+		}
+		if (!isAbsent(bracer_index)) {
+			indexes.add(bracer_index);
+		}
+		if (!indexes.isEmpty()) {
+			return Collections.min(indexes);
+		}
+
 		return 0;
 	}
 
 	private int getEndValueFieldIndex(String string) {
+
 		if ((string.indexOf("{") < string.indexOf("\"")) && (string.indexOf("{") < string.indexOf(","))
 				&& (string.indexOf("{") != -1)) {
 			return string.indexOf("}") + 1;
+		}
+		if ((string.indexOf("[") < string.indexOf("\"")) && (string.indexOf("[") < string.indexOf(","))
+				&& (string.indexOf("[") < string.indexOf("{")) && (string.indexOf("[") != -1)) {
+			return string.indexOf("]") + 1;
 		}
 		if (string.indexOf(",") != -1) {
 			return string.indexOf(",");
@@ -144,7 +162,7 @@ public class JsonHelpers {
 		for (String string : strings) {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.content = new HashMap<>();
-			getJsonObjectFirstLevel(string, jsonObject);
+			getJsonObject(string, jsonObject);
 			result.add(jsonObject);
 		}
 		return result;
