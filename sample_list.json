@@ -1,4 +1,6 @@
 [
+	"AAAAAA"
+,true,false,null,2.5,2e+10,
 	{
 		"id": "1",
 		"name": {
@@ -9,7 +11,7 @@
 		},
 		"price": "12.50",
 		"tags": "home"
-	}
+	},
 	{
 		"id": "1",
 		"name": "A green door",
@@ -20,5 +22,31 @@
 			"price": "12.50",
 			"tags": "home"
 		}
-	}
+	},
+	[
+		{
+			"id": "1",
+			"name": {
+				"id": "1",
+				"name": "A green door",
+				"price": "12.50",
+				"tags": "home"
+			},
+			"price": "12.50",
+			"tags": "home555"
+		}
+	],
+	[
+		{
+			"id": "1",
+			"name": {
+				"id": "1",
+				"name": "A green door",
+				"price": "12.50",
+				"tags": "home"
+			},
+			"price": "12.50",
+			"tags": "home1"
+		}
+	],1.10
 ]

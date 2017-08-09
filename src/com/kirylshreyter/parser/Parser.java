@@ -1,7 +1,19 @@
 package com.kirylshreyter.parser;
 
-public interface Parser<T> {
+import com.kirylshreyter.parser.model.Json;
+import com.kirylshreyter.parser.model.JsonArray;
 
-	T parse(String filePath);
+/**
+ * An parser for parsing list or single json object.
+ */
+public interface Parser {
+
+	/**
+	 * Method pars file to {@link Json}.
+	 * 
+	 * @param filePath
+	 *            full path to file with json data.
+	 */
+	JsonArray parse(String filePath);
 
 }
